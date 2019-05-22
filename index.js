@@ -45,13 +45,6 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-/* TODO: muuta haettavaksi
-  if (persons.map(p => p.name).includes(body.name)) {
-    return res.status(400).json({
-      error: 'name already exists'
-    })
-  }*/
-
   const person = new Person({
     name: body.name,
     number: body.number
@@ -60,6 +53,20 @@ app.post('/api/persons', (req, res) => {
   person.save().then(savedPerson => {
     res.json(savedPerson.toJSON())
   })
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+  const personObject = ({
+    name: body.name,
+    number: body.number
+  })
+
+  Person.findByIdAndUpdate(req.params.id, personObject, { new: true })
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON())
+    })
+  .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -71,7 +78,11 @@ app.delete('/api/persons/:id', (req, res, next) => {
 })
 
 app.get('/info', (req, res) => {
-  res.send(`<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>
+  let num = Person.find({}).then(persons => {
+    res.json(persons.map(persons => persons.toJSON()))
+  })
+  console.log(num)
+  res.send(`<p>Puhelinluettelossa on ${Person.countDocuments({})} henkilön tiedot</p>
             <p>${new Date()}`)
 })
 
