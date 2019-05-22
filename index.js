@@ -77,13 +77,17 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
+const getPersonCount = () => {
+  
+}
+
+
+
 app.get('/info', (req, res) => {
-  let num = Person.find({}).then(persons => {
-    res.json(persons.map(persons => persons.toJSON()))
-  })
-  console.log(num)
-  res.send(`<p>Puhelinluettelossa on ${Person.countDocuments({})} henkilön tiedot</p>
+  Person.countDocuments().then(maara => {
+  res.send(`<p>Puhelinluettelossa on ${maara} henkilön tiedot</p>
             <p>${new Date()}`)
+  })
 })
 
 
